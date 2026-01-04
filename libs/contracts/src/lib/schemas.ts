@@ -90,3 +90,39 @@ export const UserWithMembershipsDtoSchema = z.object({
 
 export type UserWithMembershipsDto = z.infer<typeof UserWithMembershipsDtoSchema>;
 
+// ============ Saved View DTOs ============
+export const SavedViewFiltersDtoSchema = z.object({
+  q: z.string().optional(),
+  type: z
+    .enum([FileType.PDF, FileType.DOC, FileType.IMG, FileType.OTHER])
+    .optional(),
+  tags: z.array(z.string()).optional(),
+  sort: z.enum(['name', 'updatedAt']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
+});
+
+export type SavedViewFiltersDto = z.infer<typeof SavedViewFiltersDtoSchema>;
+
+export const SavedViewDtoSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  folderId: z.string(),
+  name: z.string(),
+  filters: SavedViewFiltersDtoSchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type SavedViewDto = z.infer<typeof SavedViewDtoSchema>;
+
+export const CreateSavedViewRequestSchema = z.object({
+  folderId: z.string().min(1, 'folderId is required'),
+  name: z
+    .string()
+    .min(1, 'name is required')
+    .max(100, 'name must be 100 characters or less'),
+  filters: SavedViewFiltersDtoSchema.optional().default({}),
+});
+
+export type CreateSavedViewRequest = z.infer<typeof CreateSavedViewRequestSchema>;
+

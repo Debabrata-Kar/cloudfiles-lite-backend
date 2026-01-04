@@ -1,19 +1,52 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../context/UserContext';
 import { FileType, ListFilesQuery } from '@cloudfiles/contracts';
+import { SaveViewModal } from './SaveViewModal';
 
 export function FilesTable() {
   const api = useApi();
   const { folderId } = useParams<{ folderId: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { userId } = useUser();
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState<FileType | ''>('');
-  const [sortField, setSortField] = useState<'name' | 'updatedAt'>('updatedAt');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [typeFilter, setTypeFilter] = useState<FileType | ''>(
+    (searchParams.get('type') as FileType) || ''
+  );
+  const [sortField, setSortField] = useState<'name' | 'updatedAt'>(
+    (searchParams.get('sort') as 'name' | 'updatedAt') || 'updatedAt'
+  );
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(
+    (searchParams.get('order') as 'asc' | 'desc') || 'desc'
+  );
+  const [showSaveModal, setShowSaveModal] = useState(false);
+
+  const applyFilters = useCallback((filters: ListFilesQuery) => {
+    setSearchQuery(filters.q || '');
+    setTypeFilter((filters.type as FileType) || '');
+    setSortField(filters.sort || 'updatedAt');
+    setSortOrder(filters.order || 'desc');
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: CustomEvent<ListFilesQuery>) => {
+      applyFilters(e.detail);
+    };
+    window.addEventListener('applyFilters' as never, handler as never);
+    return () => window.removeEventListener('applyFilters' as never, handler as never);
+  }, [applyFilters]);
+
+  useEffect(() => {
+    const params: Record<string, string> = {};
+    if (searchQuery) params.q = searchQuery;
+    if (typeFilter) params.type = typeFilter;
+    if (sortField !== 'updatedAt') params.sort = sortField;
+    if (sortOrder !== 'desc') params.order = sortOrder;
+    setSearchParams(params, { replace: true });
+  }, [searchQuery, typeFilter, sortField, sortOrder, setSearchParams]);
 
   const query: ListFilesQuery = {
     q: searchQuery || undefined,
@@ -137,7 +170,19 @@ export function FilesTable() {
         <button onClick={() => refetch()} className="refresh-btn">
           Refresh
         </button>
+
+        <button onClick={() => setShowSaveModal(true)} className="save-view-btn">
+          Save View
+        </button>
       </div>
+
+      {showSaveModal && (
+        <SaveViewModal
+          folderId={folderId}
+          filters={query}
+          onClose={() => setShowSaveModal(false)}
+        />
+      )}
 
       {files.length === 0 ? (
         <p>No files found in this folder.</p>

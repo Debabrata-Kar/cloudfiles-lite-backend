@@ -4,6 +4,8 @@ import {
   FolderDto,
   PaginatedFilesDto,
   ListFilesQuery,
+  SavedViewDto,
+  CreateSavedViewRequest,
 } from '@cloudfiles/contracts';
 
 export interface ApiClientConfig {
@@ -23,6 +25,12 @@ export interface ApiClient {
   };
   files: {
     list(folderId: string, query?: ListFilesQuery): Promise<PaginatedFilesDto>;
+  };
+  savedViews: {
+    create(data: CreateSavedViewRequest): Promise<SavedViewDto>;
+    list(): Promise<SavedViewDto[]>;
+    get(id: string): Promise<SavedViewDto>;
+    delete(id: string): Promise<{ success: boolean }>;
   };
 }
 
@@ -90,6 +98,25 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
       async list(folderId: string, query?: ListFilesQuery): Promise<PaginatedFilesDto> {
         const qs = query ? buildQueryString(query as unknown as Record<string, unknown>) : '';
         return fetchWithAuth<PaginatedFilesDto>(config, `/api/folders/${folderId}/files${qs}`);
+      },
+    },
+    savedViews: {
+      async create(data: CreateSavedViewRequest): Promise<SavedViewDto> {
+        return fetchWithAuth<SavedViewDto>(config, '/api/saved-views', {
+          method: 'POST',
+          body: JSON.stringify(data),
+        });
+      },
+      async list(): Promise<SavedViewDto[]> {
+        return fetchWithAuth<SavedViewDto[]>(config, '/api/saved-views');
+      },
+      async get(id: string): Promise<SavedViewDto> {
+        return fetchWithAuth<SavedViewDto>(config, `/api/saved-views/${id}`);
+      },
+      async delete(id: string): Promise<{ success: boolean }> {
+        return fetchWithAuth<{ success: boolean }>(config, `/api/saved-views/${id}`, {
+          method: 'DELETE',
+        });
       },
     },
   };

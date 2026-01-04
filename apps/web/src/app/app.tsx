@@ -1,10 +1,27 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 import { UserSwitcher } from './components/UserSwitcher';
 import { FolderList } from './components/FolderList';
 import { FilesTable } from './components/FilesTable';
+import { SavedViewsList } from './components/SavedViewsList';
+import { ListFilesQuery } from '@cloudfiles/contracts';
 import './app.css';
 
 export function App() {
+  const navigate = useNavigate();
+
+  const handleApplyView = useCallback(
+    (folderId: string, filters: ListFilesQuery) => {
+      navigate(`/folders/${folderId}`);
+      setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent('applyFilters', { detail: filters })
+        );
+      }, 50);
+    },
+    [navigate]
+  );
+
   return (
     <div className="app">
       <header className="app-header">
@@ -15,6 +32,7 @@ export function App() {
       <div className="app-content">
         <aside className="sidebar">
           <FolderList />
+          <SavedViewsList onApplyView={handleApplyView} />
         </aside>
 
         <main className="main-content">

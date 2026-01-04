@@ -7,10 +7,12 @@ import { Team, TeamSchema } from './mongoose/team.schema';
 import { TeamMembership, TeamMembershipSchema } from './mongoose/membership.schema';
 import { Folder, FolderSchema } from './mongoose/folder.schema';
 import { File, FileSchema } from './mongoose/file.schema';
+import { SavedView, SavedViewSchema } from './mongoose/saved-view.schema';
 
 import { UserRepository } from './repositories/user.repository';
 import { FolderRepository } from './repositories/folder.repository';
 import { FileRepository } from './repositories/file.repository';
+import { SavedViewRepository } from './repositories/saved-view.repository';
 
 @Global()
 @Module({
@@ -28,13 +30,15 @@ import { FileRepository } from './repositories/file.repository';
       { name: TeamMembership.name, schema: TeamMembershipSchema },
       { name: Folder.name, schema: FolderSchema },
       { name: File.name, schema: FileSchema },
+      { name: SavedView.name, schema: SavedViewSchema },
     ]),
   ],
-  providers: [UserRepository, FolderRepository, FileRepository],
+  providers: [UserRepository, FolderRepository, FileRepository, SavedViewRepository],
   exports: [
     UserRepository,
     FolderRepository,
     FileRepository,
+    SavedViewRepository,
     MongooseModule,
   ],
 })
