@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@cloudfiles/contracts": ["libs/contracts/src/index.ts"],
+      "@cloudfiles/permissions": ["libs/permissions/src/index.ts"],
+      "@cloudfiles/api-client": ["libs/api-client/src/index.ts"],
+      "@cloudfiles/data-access": ["libs/data-access/src/index.ts"],
+      "@cloudfiles/test-support": ["libs/test-support/src/index.ts"],
+      "@cloudfiles/ui": ["libs/ui/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

@@ -1,0 +1,298 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  background-color: #f5f5f5;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.app-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+/* User Switcher */
+.user-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-switcher label {
+  font-weight: 500;
+}
+
+.user-switcher select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.user-switcher .user-info {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+/* Main Content Area */
+.app-content {
+  display: flex;
+  flex: 1;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Folder List */
+.folder-list h3,
+.saved-views-placeholder h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: #333;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 0.5rem;
+}
+
+.folder-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.folder-list li {
+  margin: 0.25rem 0;
+}
+
+.folder-list li a {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.folder-list li a:hover {
+  background: #f0f0f0;
+}
+
+.folder-list li.active a {
+  background: #667eea;
+  color: white;
+}
+
+/* Saved Views Placeholder */
+.saved-views-placeholder {
+  margin-top: auto;
+}
+
+.saved-views-placeholder .placeholder-content {
+  background: #f9f9f9;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.saved-views-placeholder p {
+  margin: 0.5rem 0;
+  color: #666;
+}
+
+.saved-views-placeholder .hint {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* Welcome */
+.welcome {
+  text-align: center;
+  padding: 3rem;
+}
+
+.welcome h2 {
+  color: #333;
+}
+
+.welcome p {
+  color: #666;
+}
+
+/* Files Container */
+.files-container h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filters .search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.filters select {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+}
+
+.filters .refresh-btn {
+  padding: 0.5rem 1rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.filters .refresh-btn:hover {
+  background: #5a6fd6;
+}
+
+/* Files Table */
+.files-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.files-table th,
+.files-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.files-table th {
+  background: #f9f9f9;
+  font-weight: 600;
+  color: #333;
+}
+
+.files-table tr:hover {
+  background: #fafafa;
+}
+
+.files-table .file-type {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.files-table .file-type.pdf {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.files-table .file-type.doc {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.files-table .file-type.img {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.files-table .file-type.other {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.files-table .visibility {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.files-table .visibility.team {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.files-table .visibility.owner-only {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* Footer */
+.app-footer {
+  background: #333;
+  color: #fff;
+  padding: 1rem 2rem;
+  text-align: center;
+}
+
+.app-footer p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.app-footer strong {
+  color: #fbbf24;
+}
+
+/* Error states */
+.error {
+  color: #dc2626;
+}
