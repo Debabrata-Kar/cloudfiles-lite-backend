@@ -52,7 +52,9 @@ export class FileRepository {
 
     const role = membership.role as TeamRole;
 
-    const cacheKey = `files:list:${folderId}:${hashQuery(query as unknown as Record<string, unknown>)}`;
+    // const cacheKey = `files:list:${folderId}:${hashQuery(query as unknown as Record<string, unknown>)}`;
+    // Added user's role in cache key to prevent permission leakage
+    const cacheKey = `files:list:${folderId}:${role}:${hashQuery(query as unknown as Record<string, unknown>)}`;
 
     return cached<PaginatedFilesDto>({
       key: cacheKey,

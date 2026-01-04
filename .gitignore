@@ -43,6 +43,9 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Local documentation/notes
+extra/
+
 .nx/cache
 .nx/workspace-data
 
