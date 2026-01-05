@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../context/UserContext';
@@ -12,7 +12,8 @@ export function FilesTable() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { userId } = useUser();
 
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [searchInput, setSearchInput] = useState(searchParams.get('q') || '');
+  const [debouncedSearch, setDebouncedSearch] = useState(searchParams.get('q') || '');
   const [typeFilter, setTypeFilter] = useState<FileType | ''>(
     (searchParams.get('type') as FileType) || ''
   );
@@ -23,9 +24,25 @@ export function FilesTable() {
     (searchParams.get('order') as 'asc' | 'desc') || 'desc'
   );
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(searchInput);
+    }, 500);
+    return () => clearTimeout(debounceRef.current);
+  }, [searchInput]);
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      clearTimeout(debounceRef.current);
+      setDebouncedSearch(searchInput);
+    }
+  };
 
   const applyFilters = useCallback((filters: ListFilesQuery) => {
-    setSearchQuery(filters.q || '');
+    setSearchInput(filters.q || '');
+    setDebouncedSearch(filters.q || '');
     setTypeFilter((filters.type as FileType) || '');
     setSortField(filters.sort || 'updatedAt');
     setSortOrder(filters.order || 'desc');
@@ -41,15 +58,15 @@ export function FilesTable() {
 
   useEffect(() => {
     const params: Record<string, string> = {};
-    if (searchQuery) params.q = searchQuery;
+    if (debouncedSearch) params.q = debouncedSearch;
     if (typeFilter) params.type = typeFilter;
     if (sortField !== 'updatedAt') params.sort = sortField;
     if (sortOrder !== 'desc') params.order = sortOrder;
     setSearchParams(params, { replace: true });
-  }, [searchQuery, typeFilter, sortField, sortOrder, setSearchParams]);
+  }, [debouncedSearch, typeFilter, sortField, sortOrder, setSearchParams]);
 
   const query: ListFilesQuery = {
-    q: searchQuery || undefined,
+    q: debouncedSearch || undefined,
     type: typeFilter || undefined,
     sort: sortField,
     order: sortOrder,
@@ -131,9 +148,10 @@ export function FilesTable() {
       <div className="filters">
         <input
           type="text"
-          placeholder="Search files..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search files... (Enter to search)"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={handleSearchKeyDown}
           className="search-input"
         />
 
