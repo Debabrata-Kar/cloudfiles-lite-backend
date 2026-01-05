@@ -3,7 +3,6 @@ import { useCallback } from 'react';
 import { UserSwitcher } from './components/UserSwitcher';
 import { FolderList } from './components/FolderList';
 import { FilesTable } from './components/FilesTable';
-import { SavedViewsList } from './components/SavedViewsList';
 import { ListFilesQuery } from '@cloudfiles/contracts';
 import './app.css';
 
@@ -31,8 +30,7 @@ export function App() {
 
       <div className="app-content">
         <aside className="sidebar">
-          <FolderList />
-          <SavedViewsList onApplyView={handleApplyView} />
+          <FolderList onApplyView={handleApplyView} />
         </aside>
 
         <main className="main-content">

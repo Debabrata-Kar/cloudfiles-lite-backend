@@ -73,8 +73,7 @@ body {
 }
 
 /* Folder List */
-.folder-list h3,
-.saved-views-placeholder h3 {
+.folder-list h3 {
   margin: 0 0 1rem 0;
   font-size: 1rem;
   color: #333;
@@ -82,32 +81,116 @@ body {
   padding-bottom: 0.5rem;
 }
 
-.folder-list ul {
+/* Tree Structure */
+.folder-tree {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.folder-list li {
+.folder-tree-item {
   margin: 0.25rem 0;
 }
 
-.folder-list li a {
+.folder-link {
   display: block;
-  padding: 0.75rem 1rem;
+  padding: 0.6rem 0.75rem;
   color: #333;
   text-decoration: none;
   border-radius: 4px;
   transition: all 0.2s;
+  font-weight: 500;
 }
 
-.folder-list li a:hover {
+.folder-link:hover {
   background: #f0f0f0;
 }
 
-.folder-list li.active a {
+.folder-link.active {
   background: #667eea;
   color: white;
+}
+
+/* Saved Views Tree (nested under folders) */
+.saved-views-tree {
+  list-style: none;
+  margin: 0.25rem 0 0.5rem 0;
+  padding: 0 0 0 1rem;
+  border-left: 2px solid #e5e7eb;
+}
+
+.saved-view-tree-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0.125rem 0;
+}
+
+.saved-view-link {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.4rem 0.6rem;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.saved-view-link:hover {
+  background: #f3f4f6;
+}
+
+.saved-view-link.active {
+  background: #10b981;
+}
+
+.saved-view-link .view-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.saved-view-link.active .view-name {
+  color: white;
+}
+
+.saved-view-link .view-badge {
+  font-size: 0.65rem;
+  color: #9ca3af;
+}
+
+.saved-view-link.active .view-badge {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.delete-view-btn-small {
+  padding: 0.125rem 0.375rem;
+  background: none;
+  border: none;
+  color: #d1d5db;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 3px;
+  opacity: 0;
+  transition: all 0.2s;
+}
+
+.saved-view-tree-item:hover .delete-view-btn-small {
+  opacity: 1;
+}
+
+.delete-view-btn-small:hover {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.delete-view-btn-small:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Saved Views Placeholder */
@@ -311,6 +394,22 @@ body {
 
 .filters .save-view-btn:hover {
   background: #059669;
+}
+
+/* Clear Filters Button */
+.filters .clear-filters-btn {
+  padding: 0.5rem 1rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.filters .clear-filters-btn:hover {
+  background: #dc2626;
 }
 
 /* Modal Styles */
@@ -522,6 +621,19 @@ body {
 .saved-view-btn:hover {
   background: #e5e7eb;
   border-color: #667eea;
+}
+
+.saved-view-btn.active {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.saved-view-btn.active .view-name {
+  color: white;
+}
+
+.saved-view-btn.active .view-filters {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .saved-view-btn .view-name {

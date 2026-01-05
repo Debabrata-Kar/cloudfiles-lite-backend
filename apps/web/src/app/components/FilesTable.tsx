@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../context/UserContext';
@@ -11,6 +11,7 @@ export function FilesTable() {
   const { folderId } = useParams<{ folderId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const { userId } = useUser();
+  const prevFolderIdRef = useRef<string | undefined>(undefined);
 
   const [searchInput, setSearchInput] = useState(searchParams.get('q') || '');
   const [debouncedSearch, setDebouncedSearch] = useState(searchParams.get('q') || '');
@@ -25,6 +26,20 @@ export function FilesTable() {
   );
   const [showSaveModal, setShowSaveModal] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const setSearchParamsRef = useRef(setSearchParams);
+  setSearchParamsRef.current = setSearchParams;
+
+  useEffect(() => {
+    if (prevFolderIdRef.current && prevFolderIdRef.current !== folderId) {
+      setSearchInput('');
+      setDebouncedSearch('');
+      setTypeFilter('');
+      setSortField('updatedAt');
+      setSortOrder('desc');
+      setSearchParamsRef.current({}, { replace: true });
+    }
+    prevFolderIdRef.current = folderId;
+  }, [folderId]);
 
   useEffect(() => {
     debounceRef.current = setTimeout(() => {
@@ -40,21 +55,27 @@ export function FilesTable() {
     }
   };
 
-  const applyFilters = useCallback((filters: ListFilesQuery) => {
-    setSearchInput(filters.q || '');
-    setDebouncedSearch(filters.q || '');
-    setTypeFilter((filters.type as FileType) || '');
-    setSortField(filters.sort || 'updatedAt');
-    setSortOrder(filters.order || 'desc');
-  }, []);
-
   useEffect(() => {
     const handler = (e: CustomEvent<ListFilesQuery>) => {
-      applyFilters(e.detail);
+      const filters = e.detail;
+      setSearchInput(filters.q || '');
+      setDebouncedSearch(filters.q || '');
+      setTypeFilter((filters.type as FileType) || '');
+      setSortField(filters.sort || 'updatedAt');
+      setSortOrder(filters.order || 'desc');
+
+      const params: Record<string, string> = {};
+      if (filters.q) params.q = filters.q;
+      if (filters.type) params.type = filters.type;
+      if (filters.sort && filters.sort !== 'updatedAt') params.sort = filters.sort;
+      if (filters.order && filters.order !== 'desc') params.order = filters.order;
+      setSearchParamsRef.current(params, { replace: true });
     };
     window.addEventListener('applyFilters' as never, handler as never);
-    return () => window.removeEventListener('applyFilters' as never, handler as never);
-  }, [applyFilters]);
+    return () => {
+      window.removeEventListener('applyFilters' as never, handler as never);
+    };
+  }, []);
 
   useEffect(() => {
     const params: Record<string, string> = {};

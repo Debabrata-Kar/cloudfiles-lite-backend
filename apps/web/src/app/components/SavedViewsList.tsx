@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../context/UserContext';
 import { SavedViewDto, ListFilesQuery } from '@cloudfiles/contracts';
@@ -12,6 +12,8 @@ export function SavedViewsList({ onApplyView }: SavedViewsListProps) {
   const api = useApi();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { folderId: currentFolderId } = useParams<{ folderId: string }>();
+  const [searchParams] = useSearchParams();
   const { userId } = useUser();
 
   const {
@@ -30,6 +32,20 @@ export function SavedViewsList({ onApplyView }: SavedViewsListProps) {
       queryClient.invalidateQueries({ queryKey: ['savedViews'] });
     },
   });
+
+  const isViewActive = (view: SavedViewDto): boolean => {
+    if (view.folderId !== currentFolderId) return false;
+    const currentQ = searchParams.get('q') || '';
+    const currentType = searchParams.get('type') || '';
+    const currentSort = searchParams.get('sort') || 'updatedAt';
+    const currentOrder = searchParams.get('order') || 'desc';
+    return (
+      (view.filters.q || '') === currentQ &&
+      (view.filters.type || '') === currentType &&
+      (view.filters.sort || 'updatedAt') === currentSort &&
+      (view.filters.order || 'desc') === currentOrder
+    );
+  };
 
   const handleApplyView = (view: SavedViewDto) => {
     navigate(`/folders/${view.folderId}`);
@@ -93,9 +109,9 @@ export function SavedViewsList({ onApplyView }: SavedViewsListProps) {
       <h3>Saved Views ({savedViews.length})</h3>
       <ul>
         {savedViews.map((view) => (
-          <li key={view.id} className="saved-view-item">
+          <li key={view.id} className={`saved-view-item ${isViewActive(view) ? 'active' : ''}`}>
             <button
-              className="saved-view-btn"
+              className={`saved-view-btn ${isViewActive(view) ? 'active' : ''}`}
               onClick={() => handleApplyView(view)}
               title={getFilterDescription(view)}
             >

@@ -8,7 +8,6 @@ import {
   TeamRole,
   FileVisibility,
 } from '@cloudfiles/contracts';
-import { canReadFile } from '@cloudfiles/permissions';
 import { File, FileDocument } from '../mongoose/file.schema';
 import { Folder, FolderDocument } from '../mongoose/folder.schema';
 import { TeamMembership, TeamMembershipDocument } from '../mongoose/membership.schema';
