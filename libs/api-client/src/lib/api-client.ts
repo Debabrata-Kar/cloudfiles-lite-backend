@@ -24,7 +24,7 @@ export interface ApiClient {
     get(): Promise<UserWithMembershipsDto>;
   };
   folders: {
-    list(): Promise<FolderDto[]>;
+    list(userIdOverride?: string): Promise<FolderDto[]>;
   };
   files: {
     list(folderId: string, query?: ListFilesQuery): Promise<PaginatedFilesDto>;
@@ -46,9 +46,10 @@ export interface ApiClient {
 async function fetchWithAuth<T>(
   config: ApiClientConfig,
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  userIdOverride?: string
 ): Promise<T> {
-  const userId = config.getUserId();
+  const userId = userIdOverride ?? config.getUserId();
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...(options.headers || {}),
@@ -115,8 +116,8 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
       },
     },
     folders: {
-      async list(): Promise<FolderDto[]> {
-        return fetchWithAuth<FolderDto[]>(config, '/api/folders');
+      async list(userIdOverride?: string): Promise<FolderDto[]> {
+        return fetchWithAuth<FolderDto[]>(config, '/api/folders', {}, userIdOverride);
       },
     },
     files: {

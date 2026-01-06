@@ -132,12 +132,52 @@ export function FilesTable() {
   }
 
   if (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const isForbidden = errorMessage.includes('403') || errorMessage.includes('Forbidden');
+    const isNotFound = errorMessage.includes('404') || errorMessage.includes('Not Found');
+
     return (
       <div className="files-container">
-        <h3>Files</h3>
-        <p className="error">Error loading files: {errorMessage}</p>
+        <div className="error-state">
+          <div className="error-icon">
+            {isForbidden ? (
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            ) : isNotFound ? (
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+                <path d="M11 8v4"/>
+                <path d="M11 16h.01"/>
+              </svg>
+            ) : (
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            )}
+          </div>
+          <h3 className="error-title">
+            {isForbidden
+              ? 'Access Denied'
+              : isNotFound
+              ? 'Folder Not Found'
+              : 'Something Went Wrong'}
+          </h3>
+          <p className="error-message">
+            {isForbidden
+              ? "You don't have permission to view this folder. Please select a folder you have access to from the sidebar."
+              : isNotFound
+              ? "This folder doesn't exist or may have been deleted."
+              : 'Unable to load files. Please try again.'}
+          </p>
+          <button onClick={() => refetch()} className="btn-secondary">
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }

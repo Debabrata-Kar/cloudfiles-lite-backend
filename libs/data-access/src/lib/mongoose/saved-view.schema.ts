@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Types, Model } from 'mongoose';
 
 @Schema({ _id: false })
 export class SavedViewFilters {
@@ -44,3 +44,14 @@ export const SavedViewSchema = SchemaFactory.createForClass(SavedView);
 
 SavedViewSchema.index({ userId: 1, folderId: 1 });
 SavedViewSchema.index({ userId: 1, name: 1 }, { unique: true });
+
+// Cascade delete: Remove all ShareLinks when a SavedView is deleted
+SavedViewSchema.pre('deleteOne', { document: false, query: true }, async function () {
+  const filter = this.getFilter();
+  const viewId = filter['_id'];
+  if (viewId) {
+    // Get the ShareLink model from the connection
+    const ShareLinkModel = this.model.db.model('ShareLink') as Model<Document>;
+    await ShareLinkModel.deleteMany({ savedViewId: viewId });
+  }
+});

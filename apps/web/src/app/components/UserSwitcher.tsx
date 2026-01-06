@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { useEffect } from 'react';
 import { useUser } from '../context/UserContext';
@@ -6,6 +7,7 @@ import { useUser } from '../context/UserContext';
 export function UserSwitcher() {
   const api = useApi();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { userId, setUserId } = useUser();
 
   const { data: users, isLoading, error } = useQuery({
@@ -21,10 +23,23 @@ export function UserSwitcher() {
     }
   }, [users, userId, setUserId]);
 
-  const handleUserChange = (newUserId: string) => {
+  const handleUserChange = async (newUserId: string) => {
     setUserId(newUserId);
     // Invalidate all queries to refetch with new user
     queryClient.invalidateQueries();
+
+    // Fetch the new user's folders and navigate to the first one
+    try {
+      const folders = await api.folders.list(newUserId);
+      if (folders && folders.length > 0) {
+        navigate(`/folders/${folders[0].id}`);
+      } else {
+        navigate('/folders');
+      }
+    } catch {
+      // If folders fetch fails, just navigate to the folders page
+      navigate('/folders');
+    }
   };
 
   if (isLoading) {
