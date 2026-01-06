@@ -8,11 +8,13 @@ import { TeamMembership, TeamMembershipSchema } from './mongoose/membership.sche
 import { Folder, FolderSchema } from './mongoose/folder.schema';
 import { File, FileSchema } from './mongoose/file.schema';
 import { SavedView, SavedViewSchema } from './mongoose/saved-view.schema';
+import { ShareLink, ShareLinkSchema } from './mongoose/share-link.schema';
 
 import { UserRepository } from './repositories/user.repository';
 import { FolderRepository } from './repositories/folder.repository';
 import { FileRepository } from './repositories/file.repository';
 import { SavedViewRepository } from './repositories/saved-view.repository';
+import { ShareLinkRepository } from './repositories/share-link.repository';
 
 @Global()
 @Module({
@@ -31,14 +33,16 @@ import { SavedViewRepository } from './repositories/saved-view.repository';
       { name: Folder.name, schema: FolderSchema },
       { name: File.name, schema: FileSchema },
       { name: SavedView.name, schema: SavedViewSchema },
+      { name: ShareLink.name, schema: ShareLinkSchema },
     ]),
   ],
-  providers: [UserRepository, FolderRepository, FileRepository, SavedViewRepository],
+  providers: [UserRepository, FolderRepository, FileRepository, SavedViewRepository, ShareLinkRepository],
   exports: [
     UserRepository,
     FolderRepository,
     FileRepository,
     SavedViewRepository,
+    ShareLinkRepository,
     MongooseModule,
   ],
 })

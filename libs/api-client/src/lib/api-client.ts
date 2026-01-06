@@ -6,6 +6,9 @@ import {
   ListFilesQuery,
   SavedViewDto,
   CreateSavedViewRequest,
+  ShareLinkDto,
+  CreateShareLinkRequest,
+  SharedViewResponse,
 } from '@cloudfiles/contracts';
 
 export interface ApiClientConfig {
@@ -31,6 +34,12 @@ export interface ApiClient {
     list(): Promise<SavedViewDto[]>;
     get(id: string): Promise<SavedViewDto>;
     delete(id: string): Promise<{ success: boolean }>;
+    createShareLink(viewId: string, data?: CreateShareLinkRequest): Promise<ShareLinkDto>;
+    listShareLinks(viewId: string): Promise<ShareLinkDto[]>;
+    deleteShareLink(viewId: string, linkId: string): Promise<{ success: boolean }>;
+  };
+  shared: {
+    getByToken(token: string): Promise<SharedViewResponse>;
   };
 }
 
@@ -52,6 +61,22 @@ async function fetchWithAuth<T>(
   const response = await fetch(`${config.baseUrl}${path}`, {
     ...options,
     headers,
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`API Error ${response.status}: ${errorBody}`);
+  }
+
+  return response.json() as Promise<T>;
+}
+
+async function fetchPublic<T>(
+  config: ApiClientConfig,
+  path: string
+): Promise<T> {
+  const response = await fetch(`${config.baseUrl}${path}`, {
+    headers: { 'Content-Type': 'application/json' },
   });
 
   if (!response.ok) {
@@ -117,6 +142,25 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
         return fetchWithAuth<{ success: boolean }>(config, `/api/saved-views/${id}`, {
           method: 'DELETE',
         });
+      },
+      async createShareLink(viewId: string, data?: CreateShareLinkRequest): Promise<ShareLinkDto> {
+        return fetchWithAuth<ShareLinkDto>(config, `/api/saved-views/${viewId}/share`, {
+          method: 'POST',
+          body: JSON.stringify(data || {}),
+        });
+      },
+      async listShareLinks(viewId: string): Promise<ShareLinkDto[]> {
+        return fetchWithAuth<ShareLinkDto[]>(config, `/api/saved-views/${viewId}/shares`);
+      },
+      async deleteShareLink(viewId: string, linkId: string): Promise<{ success: boolean }> {
+        return fetchWithAuth<{ success: boolean }>(config, `/api/saved-views/${viewId}/shares/${linkId}`, {
+          method: 'DELETE',
+        });
+      },
+    },
+    shared: {
+      async getByToken(token: string): Promise<SharedViewResponse> {
+        return fetchPublic<SharedViewResponse>(config, `/api/shared/${token}`);
       },
     },
   };

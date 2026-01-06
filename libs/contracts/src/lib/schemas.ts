@@ -126,3 +126,36 @@ export const CreateSavedViewRequestSchema = z.object({
 
 export type CreateSavedViewRequest = z.infer<typeof CreateSavedViewRequestSchema>;
 
+// ============ Share Link DTOs ============
+export const ShareLinkDtoSchema = z.object({
+  id: z.string(),
+  token: z.string(),
+  savedViewId: z.string(),
+  createdBy: z.string(),
+  expiresAt: z.string().nullable(),
+  createdAt: z.string(),
+  shareUrl: z.string(),
+});
+
+export type ShareLinkDto = z.infer<typeof ShareLinkDtoSchema>;
+
+export const CreateShareLinkRequestSchema = z.object({
+  expiresInHours: z.number().min(1).max(8760).optional(),
+});
+
+export type CreateShareLinkRequest = z.infer<typeof CreateShareLinkRequestSchema>;
+
+export const SharedViewResponseSchema = z.object({
+  view: z.object({
+    id: z.string(),
+    name: z.string(),
+    folderName: z.string(),
+    filters: SavedViewFiltersDtoSchema,
+    createdAt: z.string(),
+  }),
+  files: PaginatedFilesDtoSchema,
+  sharedBy: z.string(),
+  expiresAt: z.string().nullable(),
+});
+
+export type SharedViewResponse = z.infer<typeof SharedViewResponseSchema>;

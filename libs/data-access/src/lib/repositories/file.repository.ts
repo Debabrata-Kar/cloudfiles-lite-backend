@@ -135,4 +135,22 @@ export class FileRepository {
       limit,
     };
   }
+
+  async listFilesForSharedView(params: {
+    folderId: string;
+    query: ListFilesQuery;
+    ownerRole: TeamRole;
+  }): Promise<PaginatedFilesDto> {
+    const { folderId, query, ownerRole } = params;
+
+    const cacheKey = `files:shared:${folderId}:${ownerRole}:${hashQuery(query as unknown as Record<string, unknown>)}`;
+
+    return cached<PaginatedFilesDto>({
+      key: cacheKey,
+      ttlSeconds: CACHE_TTL_SECONDS,
+      fn: async () => {
+        return this.fetchFilesFromDb({ folderId, query, role: ownerRole });
+      },
+    });
+  }
 }

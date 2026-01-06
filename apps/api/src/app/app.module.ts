@@ -5,6 +5,7 @@ import { DataAccessModule } from '@cloudfiles/data-access';
 import { UsersController } from './controllers/users.controller';
 import { FoldersController } from './controllers/folders.controller';
 import { SavedViewsController } from './controllers/saved-views.controller';
+import { SharedController } from './controllers/shared.controller';
 import { DevController } from './controllers/dev.controller';
 import { UserMiddleware } from './middleware/user.middleware';
 
@@ -20,6 +21,7 @@ import { UserMiddleware } from './middleware/user.middleware';
     UsersController,
     FoldersController,
     SavedViewsController,
+    SharedController,
     DevController,
   ],
   providers: [],

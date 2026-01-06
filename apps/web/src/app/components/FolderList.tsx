@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { useUser } from '../context/UserContext';
 import { SavedViewDto, ListFilesQuery } from '@cloudfiles/contracts';
+import { ShareViewModal } from './ShareViewModal';
 
 interface FolderListProps {
   onApplyView: (folderId: string, filters: ListFilesQuery) => void;
@@ -14,6 +16,7 @@ export function FolderList({ onApplyView }: FolderListProps) {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { userId } = useUser();
+  const [shareView, setShareView] = useState<SavedViewDto | null>(null);
 
   // Extract folderId from URL path since FolderList is outside the Route
   const folderId = location.pathname.match(/\/folders\/([^/]+)/)?.[1];
@@ -72,6 +75,11 @@ export function FolderList({ onApplyView }: FolderListProps) {
     if (window.confirm('Delete this saved view?')) {
       deleteMutation.mutate(viewId);
     }
+  };
+
+  const handleShareView = (e: React.MouseEvent, view: SavedViewDto) => {
+    e.stopPropagation();
+    setShareView(view);
   };
 
   const getViewsForFolder = (id: string) => {
@@ -160,14 +168,32 @@ export function FolderList({ onApplyView }: FolderListProps) {
                         <span className="view-name">{view.name}</span>
                         <span className="view-badge">{getFilterBadge(view)}</span>
                       </button>
-                      <button
-                        className="delete-view-btn-small"
-                        onClick={(e) => handleDeleteView(e, view.id)}
-                        disabled={deleteMutation.isPending}
-                        title="Delete view"
-                      >
-                        &times;
-                      </button>
+                      <div className="saved-view-actions">
+                        <button
+                          className="view-action-btn share"
+                          onClick={(e) => handleShareView(e, view)}
+                          title="Share view"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="18" cy="5" r="3"/>
+                            <circle cx="6" cy="12" r="3"/>
+                            <circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                          </svg>
+                        </button>
+                        <button
+                          className="view-action-btn delete"
+                          onClick={(e) => handleDeleteView(e, view.id)}
+                          disabled={deleteMutation.isPending}
+                          title="Delete view"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                          </svg>
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -176,6 +202,12 @@ export function FolderList({ onApplyView }: FolderListProps) {
           );
         })}
       </ul>
+      {shareView && (
+        <ShareViewModal
+          view={shareView}
+          onClose={() => setShareView(null)}
+        />
+      )}
     </div>
   );
 }
